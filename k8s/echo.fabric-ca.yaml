@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fabric-ca
+  labels:
+    app: fabric-ca
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fabric-ca
+  template:
+    metadata:
+      labels:
+        app: fabric-ca
+    spec:
+      containers:
+        - name: fabric-ca
+          image: hashicorp/http-echo
+          args:
+            - "-text=fabric-ca"
+          resources:
+            limits:
+              memory: "100Mi"
+              cpu: "100m"
+          ports:
+            - containerPort: 5678
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: fabric-ca-service
+spec:
+  selector:
+    app: fabric-ca
+  type: LoadBalancer
+  ports:
+    - port: 5678 # Default port for image
+      targetPort: 5678
+      nodePort: 30054
